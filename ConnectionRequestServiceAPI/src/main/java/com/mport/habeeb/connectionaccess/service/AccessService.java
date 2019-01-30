@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mport.habeeb.connectionaccess.model.AccessCounter;
 import com.mport.habeeb.connectionaccess.model.Connection;
 import com.mport.habeeb.connectionaccess.repository.ConnectionRepository;
 
@@ -23,8 +24,20 @@ public class AccessService {
 	 * 
 	 */
 	
-	public String getIpAccess(String ip, String time) {
-		return ip+" - "+time;
+	public long getIpAccessVisit(String ipAddress) {
+		return connectionRepository.countByIpAddress(ipAddress);
+	}
+	
+	public List<Connection> getLast1000000Access(){
+		return connectionRepository.findTop1000000ByOrderByIdDesc();
+	}
+	
+	public AccessCounter getNumberOfAccess(String ipAddress) {
+		/*List<Connection> history = getLast1000000Access().stream().
+				filter(c -> c.getIpAddress().equals(ipAddress)).
+				collect(Collectors.toCollection(() -> new ArrayList<>()));*/		
+		//return new AccessCounter(ipAddress, history.size(), 1000000L);
+		return new AccessCounter(ipAddress, getIpAccessVisit(ipAddress), 1000000L);
 	}
 	
 	private long milliSecondsAgo(String days) {

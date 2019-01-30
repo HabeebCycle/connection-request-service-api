@@ -11,4 +11,7 @@ import com.mport.habeeb.connectionaccess.model.Connection;
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 	public List<Connection> findByIpAddress(String ipAddress);
 	public List<Connection> findByDateAccess(long dateAccess);
+	public long countByIpAddress(String ipAddress);
+	//public List<Connection> findTop1000000ByIpAddressOrderByIdDesc(String ipAddress);
+	public List<Connection> findTop1000000ByOrderByIdDesc();
 }

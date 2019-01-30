@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mport.habeeb.connectionaccess.model.AccessCounter;
 import com.mport.habeeb.connectionaccess.model.Connection;
 import com.mport.habeeb.connectionaccess.service.AccessService;
 
@@ -23,9 +24,9 @@ public class AccessController {
 	 */
 	
 	
-	@GetMapping("/access/{ip}/{time}")
-	public String getIpAccess(@PathVariable String ip, @PathVariable String time) {
-		return accessService.getIpAccess(ip, time);
+	@GetMapping("/access/ip/count/{ipAddress}/")
+	public AccessCounter getIpAccess(@PathVariable String ipAddress) {
+		return accessService.getNumberOfAccess(ipAddress);
 	}
 	
 	@GetMapping("/access/")
@@ -38,8 +39,13 @@ public class AccessController {
 		return accessService.getIpConnection(ipAddress);
 	}
 	
-	@GetMapping("/access/date/{accessDate}")
+	@GetMapping("/access/days/{accessDate}")
 	public List<Connection> getIpAddressHistory(@PathVariable long accessDate){
 		return accessService.getIpConnection(accessDate);
+	}
+	
+	@GetMapping("/access/ip/{ipAddress}/days/{days}")
+	public List<Connection> getIpAddressDaysAgo(@PathVariable String ipAddress, @PathVariable String days){
+		return accessService.getIpTimespanHistory(ipAddress, days);
 	}
 }
