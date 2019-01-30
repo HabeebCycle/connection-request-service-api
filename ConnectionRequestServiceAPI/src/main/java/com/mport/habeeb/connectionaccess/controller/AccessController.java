@@ -25,9 +25,12 @@ public class AccessController {
 	 */
 	
 	
-	@GetMapping("/access/ip/count/{ipAddress}/")
+	@GetMapping("/access/ip/count/{ipAddress}")
 	public AccessCounter getIpAccess(@PathVariable String ipAddress) {
-		return accessService.getNumberOfAccess(ipAddress);
+		AccessCounter result = accessService.getNumberOfAccess(ipAddress);
+		if(result==null)
+			throw new IpAddressNotFoundException("IP NOT FOUND");
+		return result;
 	}
 	
 	@GetMapping("/access/ip")
