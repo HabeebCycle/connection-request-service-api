@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mport.habeeb.connectionaccess.exception.IpAddressNotFoundException;
 import com.mport.habeeb.connectionaccess.model.AccessCounter;
 import com.mport.habeeb.connectionaccess.model.Connection;
 import com.mport.habeeb.connectionaccess.service.AccessService;
@@ -29,14 +30,20 @@ public class AccessController {
 		return accessService.getNumberOfAccess(ipAddress);
 	}
 	
-	@GetMapping("/access/")
+	@GetMapping("/access/ip")
 	public List<Connection> getAllHistory(){
-		return accessService.getAllConnection();
+		List<Connection> result = accessService.getAllConnection();
+		if(result==null)
+			throw new IpAddressNotFoundException("IP NOT FOUND");
+		return result;
 	}
 	
 	@GetMapping("/access/ip/{ipAddress}")
 	public List<Connection> getIpAddressHistory(@PathVariable String ipAddress){
-		return accessService.getIpConnection(ipAddress);
+		List<Connection> result = accessService.getIpConnection(ipAddress);
+		if(result==null)
+			throw new IpAddressNotFoundException("IP NOT FOUND");
+		return result;
 	}
 	
 	@GetMapping("/access/days/{accessDate}")
@@ -48,4 +55,5 @@ public class AccessController {
 	public List<Connection> getIpAddressDaysAgo(@PathVariable String ipAddress, @PathVariable String days){
 		return accessService.getIpTimespanHistory(ipAddress, days);
 	}
+	
 }
