@@ -3,6 +3,7 @@ package com.mport.habeeb.connectionaccess.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +16,20 @@ import com.mport.habeeb.connectionaccess.repository.ConnectionRepository;
 @Service
 public class AccessService {
 	
-	@Autowired
-	private ConnectionRepository connectionRepository;
+	private final ConnectionRepository connectionRepository;
 
-	/*
+    @Autowired
+    public AccessService(ConnectionRepository connectionRepository) {
+        this.connectionRepository = connectionRepository;
+    }
+
+    /*
 	 * Other business services
 	 * 
 	 * 
 	 */
 	
-	public long getIpAccessVisit(String ipAddress) {
+	private long getIpAccessVisit(String ipAddress) {
 		return connectionRepository.countByIpAddress(ipAddress);
 	}
 	
@@ -43,7 +48,8 @@ public class AccessService {
 	private long milliSecondsAgo(String days) {
 		int day = Integer.parseInt(days);
 		long milli = day * 24 * 60 * 60 * 1000;
-		return new Date().getTime() - milli;
+		long daysToMillis = TimeUnit.DAYS.toMillis(day);
+		return System.currentTimeMillis() - milli;
 	}
 	
 	public List<Connection> getAllConnection(){
@@ -59,11 +65,9 @@ public class AccessService {
 	}
 	
 	public List<Connection> getIpTimespanHistory(String ipAddress, String days){
-		
-		List<Connection> history = getIpConnection(ipAddress).stream().
-				filter(c -> c.getDateAccess() >= milliSecondsAgo(days)).
-				collect(Collectors.toCollection(() -> new ArrayList<>()));
-		
-		return history;
+
+        return getIpConnection(ipAddress).stream().
+                filter(c -> c.getDateAccess() >= milliSecondsAgo(days)).
+                collect(Collectors.toCollection(ArrayList::new));
 	}
 }
